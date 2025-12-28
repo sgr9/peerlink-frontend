@@ -27,10 +27,11 @@
   padding: 12px 16px;
   border: 2px solid #ddd;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem; /* Slightly smaller font */
   font-weight: 500;
   font-family: 'Courier New', monospace;
   transition: all 0.3s ease;
+  min-width: 0; /* Prevents flex items from overflowing */
 }
 
 .code-input:focus {
