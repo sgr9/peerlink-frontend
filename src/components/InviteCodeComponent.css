@@ -32,15 +32,18 @@
 
 .code-display {
   background: white;
-  padding: 24px;
+  padding: 16px; /* Reduced padding */
   border-radius: 8px;
   text-align: center;
-  font-size: 2.5rem;
+  font-size: 1.1rem; /* Reduced from 2.5rem for long UUIDs */
   font-weight: 700;
   color: #667eea;
-  letter-spacing: 3px;
+  letter-spacing: 1px; /* Reduced spacing */
   font-family: 'Courier New', monospace;
   user-select: all;
+  word-break: break-all; /* CRITICAL: Allows UUID to wrap */
+  line-height: 1.4;
+  border: 1px solid #eee;
 }
 
 .action-buttons {
@@ -171,7 +174,7 @@
 
 @media (max-width: 600px) {
   .code-display {
-    font-size: 2rem;
+    font-size: 0.9rem;
     letter-spacing: 2px;
   }
 
