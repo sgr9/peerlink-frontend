@@ -36,6 +36,9 @@ function UploadComponent({ onCodeGenerated }) {
       const response = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         body: formData,
+        headers: {
+          // Don't set Content-Type header - browser will set it with boundary
+        }
       });
 
       console.log('Upload response status:', response.status);
@@ -44,20 +47,27 @@ function UploadComponent({ onCodeGenerated }) {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Upload error response:', errorText);
-        throw new Error(errorText || 'Upload failed');
+        if (response.status === 0 || response.status >= 500) {
+          throw new Error('Backend server is not responding. Please check if the backend is deployed.');
+        }
+        throw new Error(errorText || `Upload failed (${response.status})`);
       }
 
       const data = await response.json();
       console.log('Parsed response data:', data);
       
       if (!data.port) {
-        throw new Error('No port returned from server');
+        throw new Error('No port/code returned from server');
       }
       
       setPort(data.port);
       onCodeGenerated(data.port);
     } catch (err) {
-      setError(`Error: ${err.message}`);
+      if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+        setError('Network error: Unable to reach backend. Check API_URL configuration.');
+      } else {
+        setError(`Error: ${err.message}`);
+      }
       console.error('Upload error:', err);
     } finally {
       setLoading(false);
