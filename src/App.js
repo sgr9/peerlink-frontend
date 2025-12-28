@@ -6,13 +6,13 @@ import InviteCodeComponent from './components/InviteCodeComponent';
 
 function App() {
   const [activeTab, setActiveTab] = useState('upload');
-  const [inviteCode, setInviteCode] = useState(null);
+  const [fileId, setFileId] = useState(null); // Rename state for clarity
 
-  const handleCodeGenerated = (code) => {
-    setInviteCode(code);
-    // Automatically switch to the code tab when a file is uploaded
-    if (code) {
-      setActiveTab('code');
+  const handleFileIdGenerated = (id) => {
+    setFileId(id);
+    // Automatically switch to the ID display tab when a file is uploaded
+    if (id) {
+      setActiveTab('share'); // Renamed tab key to 'share' for better context
     }
   };
 
@@ -21,7 +21,7 @@ function App() {
       <div className="card">
         <div className="header">
           <h1>🔗 PeerLink</h1>
-          <p>Simple P2P File Sharing</p>
+          <p>Simple HTTP File Sharing</p> {/* Updated description */}
         </div>
 
         <div className="tabs">
@@ -38,19 +38,19 @@ function App() {
             📥 Download
           </button>
           <button
-            className={`tab-button ${activeTab === 'code' ? 'active' : ''}`}
-            onClick={() => setActiveTab('code')}
+            className={`tab-button ${activeTab === 'share' ? 'active' : ''}`}
+            onClick={() => setActiveTab('share')}
           >
-            🔑 Invite Code
+            🔑 File ID {/* Terminology: Use "File ID" instead of "Invite Code" */}
           </button>
         </div>
 
         <div className="content">
           {activeTab === 'upload' && (
-            <UploadComponent onCodeGenerated={handleCodeGenerated} />
+            <UploadComponent onCodeGenerated={handleFileIdGenerated} />
           )}
           {activeTab === 'download' && <DownloadComponent />}
-          {activeTab === 'code' && <InviteCodeComponent code={inviteCode} />}
+          {activeTab === 'share' && <InviteCodeComponent code={fileId} />}
         </div>
       </div>
     </div>
