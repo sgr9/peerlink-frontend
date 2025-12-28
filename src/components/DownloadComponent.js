@@ -24,7 +24,13 @@ function DownloadComponent() {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Download failed');
+        if (response.status === 404) {
+          throw new Error('Invite code not found. Check if the code is correct.');
+        }
+        if (response.status === 0 || response.status >= 500) {
+          throw new Error('Backend server is not responding. Please check the backend URL.');
+        }
+        throw new Error(errorText || `Download failed (${response.status})`);
       }
 
       // Get filename from Content-Disposition header if available
@@ -49,7 +55,11 @@ function DownloadComponent() {
       setCode('');
       setError(null);
     } catch (err) {
-      setError(`Download failed: ${err.message}`);
+      if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+        setError('Network error: Unable to reach backend. Check API_URL configuration.');
+      } else {
+        setError(`Download failed: ${err.message}`);
+      }
       console.error('Download error:', err);
     } finally {
       setLoading(false);
