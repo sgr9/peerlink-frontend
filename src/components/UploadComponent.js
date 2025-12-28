@@ -4,7 +4,7 @@ import './UploadComponent.css';
 function UploadComponent({ onCodeGenerated }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [port, setPort] = useState(null);
+  const [fileId, setFileId] = useState(null); // Changed from port to fileId
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -31,44 +31,34 @@ function UploadComponent({ onCodeGenerated }) {
       const formData = new FormData();
       formData.append('file', file);
 
-      console.log('Uploading file to:', `${API_URL}/upload`);
-      
       const response = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         body: formData,
-        headers: {
-          // Don't set Content-Type header - browser will set it with boundary
-        }
       });
 
-      console.log('Upload response status:', response.status);
-      console.log('Upload response headers:', response.headers);
-      
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Upload error response:', errorText);
-        if (response.status === 0 || response.status >= 500) {
-          throw new Error('Backend server is not responding. Please check if the backend is deployed.');
+        if (response.status >= 500) {
+          throw new Error('Server error. The backend might be starting up or misconfigured.');
         }
         throw new Error(errorText || `Upload failed (${response.status})`);
       }
 
       const data = await response.json();
-      console.log('Parsed response data:', data);
       
-      if (!data.port) {
-        throw new Error('No port/code returned from server');
+      // Update: Check for fileId instead of port
+      if (!data.fileId) {
+        throw new Error('The server did not return a valid File ID');
       }
       
-      setPort(data.port);
-      onCodeGenerated(data.port);
+      setFileId(data.fileId);
+      onCodeGenerated(data.fileId); 
     } catch (err) {
       if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-        setError('Network error: Unable to reach backend. Check API_URL configuration.');
+        setError('Network error: Backend is unreachable. Ensure the Railway URL is correct.');
       } else {
-        setError(`Error: ${err.message}`);
+        setError(err.message);
       }
-      console.error('Upload error:', err);
     } finally {
       setLoading(false);
     }
@@ -76,47 +66,32 @@ function UploadComponent({ onCodeGenerated }) {
 
   const handleReset = () => {
     setFile(null);
-    setPort(null);
+    setFileId(null);
     setError(null);
-    onCodeGenerated(null);  // Reset the code in parent component
+    onCodeGenerated(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDragEnter = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
+  // Drag and drop handlers remain the same...
+  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); };
+  const handleDragEnter = (e) => { e.preventDefault(); e.stopPropagation(); };
   const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const droppedFiles = e.dataTransfer.files;
-    if (droppedFiles.length > 0) {
-      setFile(droppedFiles[0]);
+    e.preventDefault(); e.stopPropagation();
+    if (e.dataTransfer.files.length > 0) {
+      setFile(e.dataTransfer.files[0]);
       setError(null);
-    }
-  };
-
-  const handleUploadAreaClick = () => {
-    if (fileInputRef.current && !loading) {
-      fileInputRef.current.click();
     }
   };
 
   return (
     <div className="upload-component">
-      {!port ? (
+      {!fileId ? (
         <>
           <div 
             className="upload-area"
-            onClick={handleUploadAreaClick}
+            onClick={() => !loading && fileInputRef.current.click()}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
             onDrop={handleDrop}
@@ -126,12 +101,13 @@ function UploadComponent({ onCodeGenerated }) {
               type="file"
               onChange={handleFileSelect}
               className="file-input"
+              style={{ display: 'none' }}
               disabled={loading}
             />
             <div className="upload-label">
               <div className="upload-icon">📁</div>
               <p className="upload-text">
-                {file ? file.name : 'Click to select a file or drag and drop'}
+                {file ? file.name : 'Click to select or drag and drop'}
               </p>
               {file && (
                 <p className="file-size">
@@ -148,27 +124,34 @@ function UploadComponent({ onCodeGenerated }) {
             disabled={!file || loading}
             className="upload-button"
           >
-            {loading ? 'Uploading...' : 'Upload File'}
+            {loading ? (
+                <>
+                    <span className="spinner">⏳</span> Uploading...
+                </>
+            ) : 'Upload File'}
           </button>
         </>
       ) : (
         <div className="success-container">
           <div className="success-icon">✅</div>
-          <h2>File Uploaded Successfully!</h2>
-          <p className="success-text">Share this code with your peer:</p>
+          <h2>Ready to Share!</h2>
+          <p className="success-text">Copy this **File ID** and send it to your peer:</p>
+          
           <div className="code-display">
-            <code>{port}</code>
+            <code className="uuid-text">{fileId}</code>
             <button
-              onClick={() => navigator.clipboard.writeText(port)}
+              onClick={() => navigator.clipboard.writeText(fileId)}
               className="copy-button"
               title="Copy to clipboard"
             >
               📋
             </button>
           </div>
+          
           <p className="info-text">
-            Your peer can use this code to download the file
+            They can paste this ID into their Download tab to get the file.
           </p>
+          
           <button onClick={handleReset} className="reset-button">
             Upload Another File
           </button>
