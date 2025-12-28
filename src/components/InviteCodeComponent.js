@@ -3,7 +3,6 @@ import './InviteCodeComponent.css';
 
 function InviteCodeComponent({ code }) {
   const [copied, setCopied] = useState(false);
-  const [sharedMethod, setSharedMethod] = useState(null);
 
   const handleCopy = async () => {
     if (!code) return;
@@ -18,19 +17,20 @@ function InviteCodeComponent({ code }) {
 
   const handleShare = (method) => {
     if (!code) return;
-    setSharedMethod(method);
+    
+    // We update the message to reflect that this is a unique ID
+    let shareText = `Use this PeerLink ID to download my file: ${code}`;
     let shareUrl = '';
-    let shareText = `Here's my file sharing code: ${code}`;
 
     switch (method) {
       case 'whatsapp':
         shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
         break;
       case 'telegram':
-        shareUrl = `https://t.me/share/url?url=${code}&text=${encodeURIComponent('File sharing code')}`;
+        shareUrl = `https://t.me/share/url?url=${encodeURIComponent(code)}&text=${encodeURIComponent('PeerLink File ID')}`;
         break;
       case 'email':
-        shareUrl = `mailto:?subject=File Sharing Code&body=${encodeURIComponent(shareText)}`;
+        shareUrl = `mailto:?subject=PeerLink File Sharing ID&body=${encodeURIComponent(shareText)}`;
         break;
       default:
         return;
@@ -43,11 +43,12 @@ function InviteCodeComponent({ code }) {
     <div className="invite-code-component">
       {code ? (
         <div className="code-container">
-          <h2>Share Your Code</h2>
-          <p className="subtitle">Share this code with your peer to let them download the file</p>
+          <h2>Share Your File ID</h2>
+          <p className="subtitle">Your peer needs this unique ID to find and download your file.</p>
 
           <div className="code-box">
-            <div className="code-display">{code}</div>
+            {/* Added a special class to handle long UUID text wrapping */}
+            <div className="code-display uuid-text">{code}</div>
           </div>
 
           <div className="action-buttons">
@@ -55,31 +56,28 @@ function InviteCodeComponent({ code }) {
               onClick={handleCopy}
               className={`action-button copy-btn ${copied ? 'copied' : ''}`}
             >
-              {copied ? '✅ Copied!' : '📋 Copy Code'}
+              {copied ? '✅ ID Copied!' : '📋 Copy ID'}
             </button>
           </div>
 
           <div className="share-section">
-            <p className="share-title">Or share via:</p>
+            <p className="share-title">Send via:</p>
             <div className="share-buttons">
               <button
                 onClick={() => handleShare('whatsapp')}
                 className="share-button whatsapp"
-                title="Share via WhatsApp"
               >
                 📱 WhatsApp
               </button>
               <button
                 onClick={() => handleShare('telegram')}
                 className="share-button telegram"
-                title="Share via Telegram"
               >
                 ✈️ Telegram
               </button>
               <button
                 onClick={() => handleShare('email')}
                 className="share-button email"
-                title="Share via Email"
               >
                 📧 Email
               </button>
@@ -88,8 +86,7 @@ function InviteCodeComponent({ code }) {
 
           <div className="security-info">
             <p>
-              <strong>🔒 Security Tip:</strong> This code only works while your file is being shared. 
-              It will expire once you stop the server or restart the application.
+              <strong>🔒 Persistence:</strong> This ID is active as long as the backend server keeps the file in its temporary storage.
             </p>
           </div>
         </div>
@@ -97,8 +94,8 @@ function InviteCodeComponent({ code }) {
         <div className="empty-state">
           <div className="empty-icon">📭</div>
           <h2>No Active Share</h2>
-          <p>Upload a file first to generate an invite code</p>
-          <p className="hint">Go to the "Upload" tab to share a file</p>
+          <p>Upload a file first to generate a unique ID</p>
+          <p className="hint">Go to the "Upload" tab to get started</p>
         </div>
       )}
     </div>
