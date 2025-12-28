@@ -1,0 +1,181 @@
+.invite-code-component {
+  display: flex;
+  flex-direction: column;
+}
+
+.code-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.code-container h2 {
+  color: #667eea;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #666;
+  text-align: center;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.code-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.code-display {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #667eea;
+  letter-spacing: 3px;
+  font-family: 'Courier New', monospace;
+  user-select: all;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copy-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.copy-btn.copied {
+  background: #10b981;
+}
+
+.share-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.share-title {
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.share-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.share-button {
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.share-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.share-button.whatsapp:hover {
+  border-color: #25d366;
+  color: #25d366;
+}
+
+.share-button.telegram:hover {
+  border-color: #0088cc;
+  color: #0088cc;
+}
+
+.share-button.email:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.security-info {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #92400e;
+  line-height: 1.6;
+}
+
+.security-info p {
+  margin: 0;
+}
+
+.security-info strong {
+  color: #d97706;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.empty-state h2 {
+  color: #667eea;
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  color: #666;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.empty-state .hint {
+  color: #999;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .code-display {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+
+  .share-buttons {
+    grid-template-columns: 1fr;
+  }
+}
