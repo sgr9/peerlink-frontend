@@ -7,7 +7,7 @@ function DownloadComponent() {
   const [error, setError] = useState(null);
   const [downloading, setDownloading] = useState(false);
 
-  // Ensure this points to your Railway URL in production
+
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
   const handleDownload = async () => {
@@ -21,7 +21,7 @@ function DownloadComponent() {
     setError(null);
 
     try {
-      // The backend now expects /download/{uuid}
+      
       const response = await fetch(`${API_URL}/download/${code.trim()}`);
 
       if (!response.ok) {
@@ -32,15 +32,17 @@ function DownloadComponent() {
         throw new Error(errorText || `Download failed (${response.status})`);
       }
 
-      // Filename extraction logic remains the same - this is good!
+      // Extracting filename from the Content-Disposition header if available
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'downloaded-file';
       if (contentDisposition) {
-        const match = contentDisposition.match(/filename="?(.+?)"?$/);
-        if (match) filename = match[1];
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
       }
 
-      // Convert response to blob and trigger download
+      // Converting reponse to blob and triggering download
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -86,7 +88,7 @@ function DownloadComponent() {
           <input
             id="code-input"
             type="text"
-            // UPDATED: Changed placeholder from 5-digit to File ID
+          
             placeholder="Paste the unique File ID here"
             value={code}
             onChange={(e) => setCode(e.target.value)}
@@ -121,7 +123,7 @@ function DownloadComponent() {
         )}
       </button>
 
-      <div className="info-box">
+      <div className="info-box"> 
         <p className="info-title">💡 How to use:</p>
         <ol className="info-steps">
           <li>Ask your peer for the unique **File ID**</li>
